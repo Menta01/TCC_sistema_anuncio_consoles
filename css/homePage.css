@@ -1,0 +1,32 @@
+
+body {
+    background-color: #f0f2f5;
+}
+
+.navbar {
+    background-color: #007bff;
+}
+
+.navbar-brand,
+.nav-link {
+    color: #fff !important;
+}
+
+.search-bar {
+    margin-top: 20px;
+}
+
+.ads-section {
+    margin-top: 30px;
+}
+
+.ad-card {
+    margin-bottom: 20px;
+}
+
+.footer {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px 0;
+    margin-top: 30px;
+}

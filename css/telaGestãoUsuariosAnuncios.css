@@ -1,0 +1,29 @@
+
+body {
+    background-color: #f0f2f5;
+}
+
+.navbar {
+    background-color: #007bff;
+}
+
+.navbar-brand,
+.nav-link {
+    color: #fff !important;
+}
+
+.container {
+    margin-top: 20px;
+}
+
+.table th,
+.table td {
+    vertical-align: middle;
+}
+
+.footer {
+    background-color: #007bff;
+    color: #fff;
+    padding: 15px 0;
+    margin-top: 30px;
+}
