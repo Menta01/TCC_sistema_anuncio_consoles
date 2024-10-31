@@ -14,6 +14,8 @@ Algumas funcionalidades ainda estão sendo construídas, como:
 - **JavaScript:** Para interação e dinamismo no frontend
 - **MySQL:** Para armazenamento do banco de dados
 - **Bootstrap:** Para um front-end responsivo e pronto
+- **Metodologia** Scrum para melhor organização na construção do projeto
+- **CSS** Para melhoria visual do projeto
 
 ## Funcionalidades
 ### Sistema de Login
@@ -30,3 +32,6 @@ A interface conta com elementos interativos em JavaScript, que tornam o sistema 
 
 **Orientador:** Paulo Ricardo de Souza Silva  
 **Contato:** nicomenta03@gmail.com
+
+## Link da Versão Pré Projeto TCC corrigida
+https://docs.google.com/document/d/1lpf_BehNLhTzwL8rNEz01ytEK52P71E5/edit?usp=sharing&ouid=104321066210717052754&rtpof=true&sd=true
