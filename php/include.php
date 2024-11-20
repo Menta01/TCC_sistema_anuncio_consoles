@@ -1,5 +1,5 @@
 <?php
-include 'conexaoBD.php';
+include ('conexaoBD.php');
 
 // Exemplo de uma consulta
 $sql = "SELECT * FROM usuariosBD";

@@ -26,7 +26,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="homePage.html">Início</a>
+                        <a class="nav-link" href="home_Page.php">Início</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Sobre</a>
@@ -37,6 +37,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="telaLogin.html">Login</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="php/logout.php">Logout</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -45,7 +48,8 @@
     <!-- Formulário de Cadastro de Produto -->
     <div class="container">
         <h2>Cadastro de Produto</h2>
-        <form action="/cadastrar_produto.php" method="post" enctype="multipart/form-data">
+        <form action="php/cadastrarProdutos.php" method="post" enctype="multipart/form-data">
+
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome do Produto:</label>
                 <input type="text" class="form-control" id="nome" placeholder="Digite o nome do produto" name="nome"
@@ -55,10 +59,8 @@
                 <label for="categoria" class="form-label">Categoria:</label>
                 <select class="form-select" id="categoria" name="categoria" required>
                     <option value="" disabled selected>Selecione uma categoria</option>
-                    <option value="eletronicos">Eletrônicos</option>
-                    <option value="moveis">Móveis</option>
-                    <option value="vestuario">Vestuário</option>
-                    <option value="alimentos">Alimentos</option>
+                    <option value="eletronicos">Hardware</option>
+                    <option value="moveis">Carcaça</option>
                     <!-- Adicione mais categorias conforme necessário -->
                 </select>
             </div>
