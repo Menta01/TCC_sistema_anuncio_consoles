@@ -1,177 +1,192 @@
 <?php
-include('php/valida_Sessao.php'); // Verifica se o usuário está logado
-include('php/conexaoBD.php'); // Inclui a conexão com o banco de dados
-include 'visual/header.php'; // Inclui o cabeçalho
+// Incluindo o cabeçalho, validação de sessão e conexão com o banco de dados
+include 'php/conexaoBD.php'; // Certifique-se de que o caminho esteja correto
+include 'visual/header.php'; // Incluindo o cabeçalho
+include 'php/valida_Sessao.php';
 
-// Verifica se o parâmetro 'id' foi passado na URL
+// Verifica se o ID do produto foi passado na URL
 if (isset($_GET['id'])) {
-    $idProduto = $_GET['id'];
-
-    // Consulta para pegar os detalhes do produto
-    $sql = "SELECT * FROM produtos WHERE id = ?";
-    $stmt = mysqli_prepare($link, $sql);
-    
-    if ($stmt === false) {
-        die('Erro na preparação da consulta: ' . mysqli_error($link));
-    }
-
-    mysqli_stmt_bind_param($stmt, 'i', $idProduto);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-
-    // Verifica se o produto foi encontrado
-    if ($row = mysqli_fetch_assoc($result)) {
-        $nomeProduto = $row['nome'];
-        $categoriaProduto = $row['categoria'];
-        $descricaoProduto = $row['descricao'];
-        $imagensProduto = explode(',', $row['imagens']); // Se houver múltiplas imagens
-        $anuncianteNome = "João da Silva"; // Exemplo de dados do anunciante
-        $anuncianteTelefone = "(11) 12345-6789"; // Exemplo de telefone
-        $anuncianteCidade = "São Paulo"; // Exemplo de cidade
-    } else {
-        echo "Produto não encontrado.";
-        exit;
-    }
+    $idProduto = intval($_GET['id']); // Garante que o ID seja um número inteiro
 } else {
-    echo "ID do produto não informado.";
-    exit;
+    die('ID do produto não informado na URL.');
 }
 
-// Processa o comentário se o formulário for enviado
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['comentario'])) {
-    $usuario_id = $_SESSION['id_usuario']; // ID do usuário logado
-    $produto_id = $_POST['produto_id']; // ID do produto
-    $comentario = mysqli_real_escape_string($link, $_POST['comentario']); // Comentário do usuário
+// Consulta para pegar as imagens associadas ao produto na tabela imagens_produto
+$queryImagens = "SELECT i.url_imagem 
+                 FROM imagens_produto i
+                 WHERE i.id_produto = $idProduto";
 
-    // Verifica se o comentário não está vazio
-    if (!empty($comentario)) {
-        // Insere o comentário no banco de dados
-        $sql = "INSERT INTO comentarios (usuario_id, produto_id, comentario) VALUES (?, ?, ?)";
-        $stmt = mysqli_prepare($link, $sql);
+// Executando a consulta de imagens
+$resultImagens = mysqli_query($link, $queryImagens);
 
-        if ($stmt === false) {
-            die('Erro na preparação da consulta para inserir comentário: ' . mysqli_error($link));
-        }
-
-        mysqli_stmt_bind_param($stmt, 'iis', $usuario_id, $produto_id, $comentario);
-        
-        // Executa a consulta e verifica se foi bem-sucedida
-        if (mysqli_stmt_execute($stmt)) {
-            echo "<div class='alert alert-success'>Comentário enviado com sucesso!</div>";
-        } else {
-            echo "<div class='alert alert-danger'>Erro ao enviar comentário: " . mysqli_error($link) . "</div>";
-        }
-    } else {
-        echo "<div class='alert alert-warning'>Comentário não pode ser vazio.</div>";
-    }
+// Verifica se houve erro na execução da consulta
+if (!$resultImagens) {
+    die('Erro na consulta de imagens: ' . mysqli_error($link));
 }
+
+// Consulta para pegar as informações do produto (nome, descrição, categoria) e o nome do usuário
+$queryProduto = "SELECT p.nome, p.descricao, p.categoria, u.nome AS nome_usuario
+                 FROM produtos p
+                 JOIN usuariosbd u ON p.id_usuario = u.ID
+                 WHERE p.id = $idProduto";
+
+// Executando a consulta do produto
+$resultProduto = mysqli_query($link, $queryProduto);
+
+// Verifica se houve erro na execução da consulta
+if (!$resultProduto) {
+    die('Erro na consulta de produto: ' . mysqli_error($link));
+}
+
+// Obtendo os dados do produto
+$produto = mysqli_fetch_assoc($resultProduto);
+
+// Armazenando as imagens em um array
+$imagensProduto = [];
+while ($row = mysqli_fetch_assoc($resultImagens)) {
+    $imagensProduto[] = $row['url_imagem'];
+}
+
+// Fecha a conexão com o banco de dados
+mysqli_close($link);
 ?>
 
 <!DOCTYPE html>
 <html lang="pt">
 
 <head>
-    <title>Detalhes do Anúncio</title>
+    <title>Detalhes do Produto</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Arquivo de Estilos Externo -->
-    <link href="css/telaAnuncio.css" rel="stylesheet">
-    <!-- Bootstrap JS Bundle -->
+    <!-- Estilo personalizado -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .main-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .thumbnail-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .thumbnail {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .thumbnail:hover {
+            transform: scale(1.1);
+            border: 2px solid #007bff;
+        }
+
+        .product-info {
+            margin-top: 30px;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-info h3 {
+            color: #007bff;
+        }
+
+        .product-info p {
+            font-size: 1.1rem;
+        }
+
+        .product-info strong {
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+        }
+    </style>
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
 
-<?php
-renderHeader(); // Renderiza o cabeçalho
-?>
+<!-- Navbar -->
+<?php renderHeader() ?>
 
-    <!-- Detalhes do Anúncio -->
-    <div class="container ad-details mt-4">
-        <div class="row">
-            <div class="col-md-8">
-                <!-- Imagens do Anúncio -->
-                <div class="ad-images mb-3">
-                    <h3>Imagens do Anúncio</h3>
-                    <div id="carouselExampleCaptions" class="carousel slide">
-                        <div class="carousel-inner">
-                            <?php foreach ($imagensProduto as $index => $imagem): ?>
-                                <div class="carousel-item <?php echo $index == 0 ? 'active' : ''; ?>">
-                                    <img src="uploads/<?php echo $imagem; ?>" class="d-block w-100" alt="Imagem do Anúncio">
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Detalhes do Produto</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Galeria de Imagens -->
+            <div class="image-gallery">
+                <?php if (!empty($imagensProduto)): ?>
+                    <!-- Imagem Principal -->
+                    <img id="mainImage" src="<?php echo $imagensProduto[0]; ?>" alt="Imagem Principal" class="main-image img-fluid">
+
+                    <!-- Miniaturas -->
+                    <div class="thumbnail-container">
+                        <?php foreach ($imagensProduto as $imagem): ?>
+                            <img src="<?php echo $imagem; ?>" alt="Miniatura" class="thumbnail" onclick="changeMainImage(this)">
+                        <?php endforeach; ?>
                     </div>
-                </div>
-
-                <!-- Informações do Anúncio -->
-                <div class="ad-info">
-                    <h3>Detalhes do Anúncio</h3>
-                    <p><strong>Nome do Produto:</strong> <?php echo $nomeProduto; ?></p>
-                    <p><strong>Categoria:</strong> <?php echo $categoriaProduto; ?></p>
-                    <p><strong>Descrição:</strong> <?php echo $descricaoProduto; ?></p>
-                </div>
+                <?php else: ?>
+                    <p>Nenhuma imagem disponível para este produto.</p>
+                <?php endif; ?>
             </div>
+        </div>
 
-            <div class="col-md-4">
-                <!-- Informações do Anunciante -->
-                <div class="advertiser-info mb-3">
-                    <h3>Informações do Anunciante</h3>
-                    <p><strong>Nome:</strong> <?php echo $anuncianteNome; ?></p>
-                    <p><strong>Telefone:</strong> <?php echo $anuncianteTelefone; ?></p>
-                    <p><strong>Cidade:</strong> <?php echo $anuncianteCidade; ?></p>
-                </div>
+        <div class="col-md-4">
+            <!-- Informações do Produto -->
+            <div class="product-info">
+                <h3>Informações do Produto</h3>
+                <p><strong>Nome:</strong> <?php echo htmlspecialchars($produto['nome']); ?></p>
+                <p><strong>Descrição:</strong> <?php echo nl2br(htmlspecialchars($produto['descricao'])); ?></p>
+                <p><strong>Categoria:</strong> <?php echo htmlspecialchars($produto['categoria']); ?></p>
+                <p><strong>Postado por:</strong> <?php echo htmlspecialchars($produto['nome_usuario']); ?></p>
             </div>
         </div>
     </div>
 
-    <!-- Seção de Comentários -->
-    <div class="container comment-form mt-4">
-        <h3>Deixe sua pergunta ou comentário</h3>
-        <form action="telaAnuncio.php?id=<?php echo $idProduto; ?>" method="post">
-            <input type="hidden" name="produto_id" value="<?php echo $idProduto; ?>"> <!-- ID do produto -->
-            <div class="mb-3">
-                <label for="comentario" class="form-label">Comentário</label>
-                <textarea class="form-control" id="comentario" name="comentario" rows="4" required></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Enviar Comentário</button>
-        </form>
-    </div>
+</div>
 
-    <!-- Seção de Comentários Existentes -->
-    <div class="container comments-section mt-4">
-        <h3>Comentários</h3>
-        <?php
-        // Consulta para pegar todos os comentários do produto
-        $sqlComentarios = "SELECT c.comentario, u.nome FROM comentarios c JOIN usuariosbd u ON c.usuario_id = u.id WHERE c.produto_id = ? ORDER BY c.id DESC";
-        $stmtComentarios = mysqli_prepare($link, $sqlComentarios);
-        mysqli_stmt_bind_param($stmtComentarios, 'i', $idProduto);
-        mysqli_stmt_execute($stmtComentarios);
-        $resultComentarios = mysqli_stmt_get_result($stmtComentarios);
+<?php include 'visual/footer.php'; // Inclui o footer da pasta visual ?>
 
-        if (mysqli_num_rows($resultComentarios) > 0) {
-            while ($comentario = mysqli_fetch_assoc($resultComentarios)) {
-                echo "<div class='comment'>";
-                echo "<p><strong>" . $comentario['nome'] . ":</strong></p>";
-                echo "<p>" . $comentario['comentario'] . "</p>";
-                echo "</div><hr>";
-            }
-        } else {
-            echo "<p>Nenhum comentário ainda.</p>";
-        }
-        ?>
-    </div>
+<script>
+    // Função para alterar a imagem principal ao clicar na miniatura
+    function changeMainImage(thumbnail) {
+        const mainImage = document.getElementById('mainImage');
+        mainImage.src = thumbnail.src;
+    }
+</script>
 
 </body>
-
+<?php include 'teste.php'; ?>
 </html>

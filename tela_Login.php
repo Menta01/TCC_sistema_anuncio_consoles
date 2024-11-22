@@ -1,4 +1,6 @@
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -14,6 +16,14 @@
 <body>
 
     <div class="login-container">
+    <?php
+        if (isset($_GET["erroLogin"])){
+            $erroLogin = $_GET["erroLogin"];
+            if ($erroLogin == "dadosInvalidos"){
+                echo "<div class='alert alert-danger text-center' style='text-align:center';><strong>USUÁRIO</strong> ou <strong>SENHA</strong> inválidos!</div>";
+            }
+        }
+    ?>
         <h2>Tela de Login</h2>
         <form action="php/login.php" method="POST">
             <div class="mb-3">

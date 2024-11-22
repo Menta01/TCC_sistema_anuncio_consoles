@@ -18,7 +18,7 @@ mysqli_stmt_bind_param($stmt, 's', $emailUsuario);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 
-if ($row = mysqli_fetch_assoc($result)) {
+if ($row = mysqli_fetch_assoc($result)) {   
     $_SESSION['id_usuario'] = $row['id']; // Armazena o ID do usuário na sessão
 } else {
     // Caso o usuário não seja encontrado, redireciona para a página de login

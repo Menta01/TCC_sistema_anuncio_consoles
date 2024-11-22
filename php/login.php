@@ -2,6 +2,7 @@
 session_start(); // Iniciar uma sessão
 include("conexaoBD.php");
 
+
 // Captura os dados do formulário
 $email = mysqli_real_escape_string($link, $_POST['email']);
 $senha = mysqli_real_escape_string($link, $_POST['senha']);
@@ -28,13 +29,15 @@ if ($quantidadeLogin > 0) {
     
     $_SESSION['email'] = $email;
     $_SESSION['nome']  = $nome;
-
+    $_SESSION['logado'] = true;
+    $_SESSION['id_usuario'] = $row['id'];
     
+
     header('Location: http://localhost/ProjetoTCC/home_Page.php'); 
     exit();
 } else {
     // Se o login falhar (e-mail ou senha incorretos)
-    header('Location: formLogin.php?pagina=formLogin&erroLogin=dadosInvalidos');
+    header('Location: ../tela_Login.php?erroLogin=dadosInvalidos');
     exit();
 }
 ?>

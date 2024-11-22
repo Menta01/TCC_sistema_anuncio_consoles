@@ -1,9 +1,7 @@
 <?php
-
-if(!isset($_SESSION)) {
     session_start();
-}
+    session_unset();
+    session_destroy();
 
-session_destroy();
-
-header(": html/tela_Login.html");
+    header('location:../tela_Login.php');
+?>

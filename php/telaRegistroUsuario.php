@@ -1,7 +1,7 @@
 <?php
 // Incluir o arquivo de conexão com o banco de dados
 include ('conexaoBD.php');  
-include ('valida_Sessao.php');
+
 // Verifica se o formulário foi submetido
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Captura os dados do formulário

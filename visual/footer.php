@@ -3,7 +3,7 @@
 $anoAtual = date("Y");
 ?>
 
-<footer class="footer bg-light py-3">
+<footer class="footer bg-light text-dark fixed-bottom py-3">
     <div class="container text-center">
         <p class="mb-2">&copy; <?php echo $anoAtual; ?> Minha Empresa. Todos os direitos reservados.</p>
         <ul class="list-inline">

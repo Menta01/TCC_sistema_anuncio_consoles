@@ -1,6 +1,6 @@
 <?php
-include('valida_Sessao.php');
-include 'conexaoBD.php';
+include('php/valida_Sessao.php');
+include 'php/conexaoBD.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome = $_POST['nome'];
