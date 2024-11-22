@@ -1,14 +1,13 @@
 <?php
+// Inclui o arquivo de validação de sessão
+include 'php/valida_sessao.php'; // Este arquivo já valida a sessão e inicia o `session_start`
+
+// Inclui o cabeçalho, passando a página atual
+require 'visual/header.php';
+renderHeader('postar_anuncio'); // Passa 'postar_anuncio' como parâmetro para marcar a página ativa
+
 // Conexão com o banco de dados
 require 'php/conexaoBD.php';
-
-// Verifica se o usuário está logado
-session_start();
-if (!isset($_SESSION['logado']) || $_SESSION['logado'] !== true) {
-    die("<p>Você precisa estar logado para cadastrar um produto. Faça login e tente novamente.</p>");
-}
-
-$id_usuario = $_SESSION['id_usuario']; // ID do usuário logado
 
 // Caminho do diretório para armazenar as imagens (diretório absoluto)
 $diretorio_destino = 'C:/xampp/htdocs/ProjetoTCC/uploads/imagens_produtos/';
@@ -17,6 +16,8 @@ $diretorio_destino = 'C:/xampp/htdocs/ProjetoTCC/uploads/imagens_produtos/';
 if (!is_dir($diretorio_destino)) {
     mkdir($diretorio_destino, 0777, true); // Cria o diretório com permissões adequadas
 }
+
+$produto_cadastrado = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Recebe os dados do formulário
@@ -34,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Primeiro, inserimos o produto na tabela 'produtos'
     $sql_produto = "INSERT INTO produtos (nome, categoria, descricao, id_usuario) 
-                    VALUES ('$nome', '$categoria', '$descricao', '$id_usuario')";
+                    VALUES ('$nome', '$categoria', '$descricao', '{$_SESSION['id_usuario']}')";
 
     if (mysqli_query($link, $sql_produto)) {
         // Recupera o ID do produto recém-inserido
@@ -68,8 +69,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
-        
-        echo "<p>Produto cadastrado com sucesso!</p>";
+
+        $produto_cadastrado = true;
     } else {
         echo "Erro ao cadastrar o produto: " . mysqli_error($link);
     }
@@ -95,33 +96,42 @@ mysqli_close($link);
 
 <body>
     <!-- Formulário de Cadastro de Produto -->
-    <div class="container">
-        <h2>Cadastro de Produto</h2>
-        <form action="" method="post" enctype="multipart/form-data">
+    <div class="container d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card p-4" style="width: 100%; max-width: 500px;">
+            <h2 class="text-center mb-4">Cadastro de Produto</h2>
+            <form action="" method="post" enctype="multipart/form-data">
 
-            <div class="mb-3">
-                <label for="nome" class="form-label">Nome do Produto:</label>
-                <input type="text" class="form-control" id="nome" placeholder="Digite o nome do produto" name="nome" required>
-            </div>
-            <div class="mb-3">
-                <label for="categoria" class="form-label">Categoria:</label>
-                <select class="form-select" id="categoria" name="categoria" required>
-                    <option value="" disabled selected>Selecione uma categoria</option>
-                    <option value="eletronicos">Hardware</option>
-                    <option value="moveis">Carcaça</option>
-                    <!-- Adicione mais categorias conforme necessário -->
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="descricao" class="form-label">Descrição:</label>
-                <textarea class="form-control" id="descricao" rows="3" placeholder="Digite uma breve descrição do produto" name="descricao"></textarea>
-            </div>
-            <div class="mb-3">
-                <label for="imagens" class="form-label">Imagens do Produto (3 a 5 imagens):</label>
-                <input class="form-control" type="file" id="imagens" name="imagens[]" accept="image/*" multiple required>
-            </div>
-            <button type="submit" class="btn btn-primary">Cadastrar</button>
-        </form>
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome do Produto:</label>
+                    <input type="text" class="form-control" id="nome" placeholder="Digite o nome do produto" name="nome" required>
+                </div>
+                <div class="mb-3">
+                    <label for="categoria" class="form-label">Categoria:</label>
+                    <select class="form-select" id="categoria" name="categoria" required>
+                        <option value="" disabled selected>Selecione uma categoria</option>
+                        <option value="eletronicos">Hardware</option>
+                        <option value="moveis">Carcaça</option>
+                        <!-- Adicione mais categorias conforme necessário -->
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="descricao" class="form-label">Descrição:</label>
+                    <textarea class="form-control" id="descricao" rows="3" placeholder="Digite uma breve descrição do produto" name="descricao"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="imagens" class="form-label">Imagens do Produto (3 a 5 imagens):</label>
+                    <input class="form-control" type="file" id="imagens" name="imagens[]" accept="image/*" multiple required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Cadastrar</button>
+            </form>
+
+            <!-- Mensagem de Sucesso -->
+            <?php if ($produto_cadastrado): ?>
+                <div class="alert alert-success mt-4" role="alert">
+                    Produto cadastrado com sucesso!
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <?php

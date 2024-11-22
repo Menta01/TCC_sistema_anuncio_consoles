@@ -1,8 +1,9 @@
 <?php
 // Incluindo o cabeçalho, validação de sessão e conexão com o banco de dados
 include 'php/conexaoBD.php'; // Certifique-se de que o caminho esteja correto
-include 'visual/header.php'; // Incluindo o cabeçalho
 include 'php/valida_Sessao.php';
+include 'visual/header.php'; // Incluindo o cabeçalho
+
 
 // Verifica se o ID do produto foi passado na URL
 if (isset($_GET['id'])) {
