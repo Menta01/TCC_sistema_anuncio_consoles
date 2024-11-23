@@ -45,6 +45,12 @@ function renderHeader($currentPage = '') {
                         <li class="nav-item">
                             <a class="nav-link <?= $currentPage === 'contato' ? 'active' : '' ?>" href="tela_Cadastro_Produto.php">Postar um Anuncio</a>
                         </li>
+                        <?php if ($emailUsuario): ?>
+                            <!-- Adicionando a opção de "Meus Anúncios" para usuários logados -->
+                            <li class="nav-item">
+                                <a class="nav-link <?= $currentPage === 'meusAnuncios' ? 'active' : '' ?>" href="meusAnuncios.php">Meus Anúncios</a>
+                            </li>
+                        <?php endif; ?>
                         <?php if ($isAdmin): ?>
                             <!-- Exibe as opções de gestão apenas para admins -->
                             <li class="nav-item">
@@ -52,6 +58,12 @@ function renderHeader($currentPage = '') {
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link <?= $currentPage === 'gestao_usuarios' ? 'active' : '' ?>" href="tela_Gestão_Usuarios.php">Gestão de Usuários</a>
+                            </li>
+                        <?php endif; ?>
+                        <!-- Adicionando a opção de Analytics para usuários logados -->
+                        <?php if ($emailUsuario): ?>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $currentPage === 'analytics' ? 'active' : '' ?>" href="static.php">Analytics</a>
                             </li>
                         <?php endif; ?>
                     </ul>

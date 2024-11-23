@@ -4,12 +4,17 @@ include 'php/conexaoBD.php'; // Certifique-se de que o caminho esteja correto
 include 'php/valida_Sessao.php';
 include 'visual/header.php'; // Incluindo o cabeçalho
 
-
 // Verifica se o ID do produto foi passado na URL
 if (isset($_GET['id'])) {
     $idProduto = intval($_GET['id']); // Garante que o ID seja um número inteiro
 } else {
     die('ID do produto não informado na URL.');
+}
+
+// Atualiza o contador de visualizações no banco
+$queryVisualizacoes = "UPDATE produtos SET visualizacoes = visualizacoes + 1 WHERE id = $idProduto";
+if (!mysqli_query($link, $queryVisualizacoes)) {
+    die('Erro ao atualizar contagem de visualizações: ' . mysqli_error($link));
 }
 
 // Consulta para pegar as imagens associadas ao produto na tabela imagens_produto
@@ -25,8 +30,8 @@ if (!$resultImagens) {
     die('Erro na consulta de imagens: ' . mysqli_error($link));
 }
 
-// Consulta para pegar as informações do produto (nome, descrição, categoria) e o nome do usuário
-$queryProduto = "SELECT p.nome, p.descricao, p.categoria, u.nome AS nome_usuario
+// Consulta para pegar as informações do produto (nome, descrição, categoria, status) e o nome do usuário
+$queryProduto = "SELECT p.nome, p.descricao, p.categoria, p.visualizacoes, p.status, u.nome AS nome_usuario
                  FROM produtos p
                  JOIN usuariosbd u ON p.id_usuario = u.ID
                  WHERE p.id = $idProduto";
@@ -172,6 +177,8 @@ mysqli_close($link);
                 <p><strong>Descrição:</strong> <?php echo nl2br(htmlspecialchars($produto['descricao'])); ?></p>
                 <p><strong>Categoria:</strong> <?php echo htmlspecialchars($produto['categoria']); ?></p>
                 <p><strong>Postado por:</strong> <?php echo htmlspecialchars($produto['nome_usuario']); ?></p>
+                <p><strong>Visualizações:</strong> <?php echo $produto['visualizacoes']; ?> vezes</p>
+                <p><strong>Status:</strong> <?php echo htmlspecialchars($produto['status']); ?></p> <!-- Exibindo o status -->
             </div>
         </div>
     </div>

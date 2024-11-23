@@ -24,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome = mysqli_real_escape_string($link, $_POST['nome']);
     $categoria = mysqli_real_escape_string($link, $_POST['categoria']);
     $descricao = mysqli_real_escape_string($link, $_POST['descricao']);
-    
+    $status = mysqli_real_escape_string($link, $_POST['status']); // Recebe o status
+
     // Verifica o número de imagens enviadas
     $num_imagens = count($_FILES['imagens']['name']);
     
@@ -34,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     // Primeiro, inserimos o produto na tabela 'produtos'
-    $sql_produto = "INSERT INTO produtos (nome, categoria, descricao, id_usuario) 
-                    VALUES ('$nome', '$categoria', '$descricao', '{$_SESSION['id_usuario']}')";
+    $sql_produto = "INSERT INTO produtos (nome, categoria, descricao, status, id_usuario) 
+                    VALUES ('$nome', '$categoria', '$descricao', '$status', '{$_SESSION['id_usuario']}')";
 
     if (mysqli_query($link, $sql_produto)) {
         // Recupera o ID do produto recém-inserido
@@ -111,12 +112,25 @@ mysqli_close($link);
                         <option value="" disabled selected>Selecione uma categoria</option>
                         <option value="eletronicos">Hardware</option>
                         <option value="moveis">Carcaça</option>
-                        <!-- Adicione mais categorias conforme necessário -->
+                        <option value="placa_de_video">Placa de Vídeo</option>
+                        <option value="processador">Processador</option>
+                        <option value="memoria_ram">Memória RAM</option>
+                        <option value="placa_mae">Placa-mãe</option>
+                        <option value="armazenamento">Armazenamento (HD/SSD)</option>
+                        <option value="fonte_alimentacao">Fonte de Alimentação</option>
+                        <option value="coolers_resfriamento">Coolers e Sistemas de Resfriamento</option>
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="descricao" class="form-label">Descrição:</label>
                     <textarea class="form-control" id="descricao" rows="3" placeholder="Digite uma breve descrição do produto" name="descricao"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Status:</label>
+                    <select class="form-select" id="status" name="status" required>
+                        <option value="Funcionando">Funcionando</option>
+                        <option value="Não Funcionando">Não Funcionando</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="imagens" class="form-label">Imagens do Produto (3 a 5 imagens):</label>
