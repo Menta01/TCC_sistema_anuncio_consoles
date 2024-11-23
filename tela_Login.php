@@ -38,7 +38,7 @@
                 <button type="submit" class="btn btn-primary btn-block">Entrar</button>
             </div>
             <div class="mt-3 text-center">
-                <a href="telaRegistroUsuario.html">Registrar</a>
+                <a href="tela_Registro_Usuario.html">Registrar</a>
             </div>
         </form>
     </div>

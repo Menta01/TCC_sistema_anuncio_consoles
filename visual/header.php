@@ -6,6 +6,13 @@ function renderHeader($currentPage = '') {
     
     // Verifica se o usuário está logado com base no email
     $emailUsuario = isset($_SESSION['email']) ? $_SESSION['email'] : null;
+    // Verifica se o usuário é admin
+    $isAdmin = isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario'] === 'admin';
+
+    // Verificação para checar se o tipo de usuário está sendo recebido corretamente
+    echo '<pre>';
+    var_dump($_SESSION['tipoUsuario']); // Mostra o tipo de usuário
+    echo '</pre>';
 
     ?>
     <!DOCTYPE html>
@@ -38,6 +45,15 @@ function renderHeader($currentPage = '') {
                         <li class="nav-item">
                             <a class="nav-link <?= $currentPage === 'contato' ? 'active' : '' ?>" href="tela_Cadastro_Produto.php">Postar um Anuncio</a>
                         </li>
+                        <?php if ($isAdmin): ?>
+                            <!-- Exibe as opções de gestão apenas para admins -->
+                            <li class="nav-item">
+                                <a class="nav-link <?= $currentPage === 'gestao_produtos' ? 'active' : '' ?>" href="tela_Gestão_Produtos.php">Gestão de Produtos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link <?= $currentPage === 'gestao_usuarios' ? 'active' : '' ?>" href="tela_Gestão_Usuarios.php">Gestão de Usuários</a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                     
                     <!-- Botões à direita -->

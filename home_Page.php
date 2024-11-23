@@ -4,10 +4,10 @@ include 'visual/header.php';
 include 'php/conexaoBD.php';
 
 session_start();
-echo '<pre>';
+/*echo '<pre>';
 print_r($_SESSION);
 echo '</pre>';
-
+*/
 // Evitar problemas de memória temporariamente (não recomendado para produção)
 ini_set('memory_limit', '1024M');
 

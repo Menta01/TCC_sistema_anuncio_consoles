@@ -2,7 +2,6 @@
 session_start(); // Iniciar uma sessão
 include("conexaoBD.php");
 
-
 // Captura os dados do formulário
 $email = mysqli_real_escape_string($link, $_POST['email']);
 $senha = mysqli_real_escape_string($link, $_POST['senha']);
@@ -12,7 +11,6 @@ if (empty($email) || empty($senha)) {
     header('Location: formLogin.php?pagina=formLogin&erroLogin=camposVazios');
     exit();
 }
-
 
 $buscarLogin = "SELECT * FROM usuariosBD WHERE email = '{$email}' AND senha = '{$senha}'";
 $efetuarLogin = mysqli_query($link, $buscarLogin);
@@ -25,14 +23,16 @@ if ($quantidadeLogin > 0) {
     $registro = mysqli_fetch_assoc($efetuarLogin);
     $email = $registro['email']; 
     $nome  = $registro['nome'];
+    $tipoUsuario = $registro['TipoUsuario']; // Adiciona o tipo de usuário
 
-    
+    // Armazenando os dados na sessão
     $_SESSION['email'] = $email;
     $_SESSION['nome']  = $nome;
     $_SESSION['logado'] = true;
-    $_SESSION['id_usuario'] = $row['id'];
-    
+    $_SESSION['id_usuario'] = $registro['ID'];  // Corrigido para usar $registro['ID']
+    $_SESSION['tipoUsuario'] = $tipoUsuario; // Definindo o tipo de usuário (admin ou normal)
 
+    // Redireciona para a página principal ou home page
     header('Location: http://localhost/ProjetoTCC/home_Page.php'); 
     exit();
 } else {
