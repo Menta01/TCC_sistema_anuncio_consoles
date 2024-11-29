@@ -53,7 +53,7 @@ mysqli_close($link);
     <title>Estatísticas de Visualizações</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .container {
+        .container { 
             margin-top: 30px;
         }
         .card {

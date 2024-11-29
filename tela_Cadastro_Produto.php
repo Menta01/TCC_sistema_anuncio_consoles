@@ -110,15 +110,13 @@ mysqli_close($link);
                     <label for="categoria" class="form-label">Categoria:</label>
                     <select class="form-select" id="categoria" name="categoria" required>
                         <option value="" disabled selected>Selecione uma categoria</option>
-                        <option value="eletronicos">Hardware</option>
-                        <option value="moveis">Carcaça</option>
-                        <option value="placa_de_video">Placa de Vídeo</option>
-                        <option value="processador">Processador</option>
-                        <option value="memoria_ram">Memória RAM</option>
-                        <option value="placa_mae">Placa-mãe</option>
-                        <option value="armazenamento">Armazenamento (HD/SSD)</option>
-                        <option value="fonte_alimentacao">Fonte de Alimentação</option>
-                        <option value="coolers_resfriamento">Coolers e Sistemas de Resfriamento</option>
+                        <option value="Placa de Vídeo">Placa de Vídeo</option>
+                        <option value="Processador">Processador</option>
+                        <option value="Memória RAM">Memória RAM</option>
+                        <option value="Placa-mãe">Placa-mãe</option>
+                        <option value="Armazenamento (HD/SSD)">Armazenamento (HD/SSD)</option>
+                        <option value="Fonte de Alimentação">Fonte de Alimentação</option>
+                        <option value="Coolers e Sistemas de Resfriamento">Coolers e Sistemas de Resfriamento</option>
                     </select>
                 </div>
                 <div class="mb-3">

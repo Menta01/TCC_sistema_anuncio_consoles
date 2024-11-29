@@ -3,16 +3,36 @@ function renderHeader($currentPage = '') {
     if (session_status() === PHP_SESSION_NONE) {
         session_start(); // Inicia a sessão apenas se ainda não tiver sido iniciada
     }
-    
+
     // Verifica se o usuário está logado com base no email
     $emailUsuario = isset($_SESSION['email']) ? $_SESSION['email'] : null;
     // Verifica se o usuário é admin
     $isAdmin = isset($_SESSION['tipoUsuario']) && $_SESSION['tipoUsuario'] === 'admin';
 
-    // Verificação para checar se o tipo de usuário está sendo recebido corretamente
-    echo '<pre>';
-    var_dump($_SESSION['tipoUsuario']); // Mostra o tipo de usuário
-    echo '</pre>';
+    // Incluir a conexão com o banco de dados
+    include('php/conexaoBD.php'); // Inclua o arquivo de conexão
+
+    // Definir foto padrão caso o usuário não tenha foto
+    $fotoPerfil = 'uploads/usuarios/default-profile.jpg'; 
+
+    if ($emailUsuario) {
+        // Consulta no banco de dados para pegar o nome da foto do usuário
+        $query = "SELECT foto FROM usuariosbd WHERE email = ?";
+        $stmt = mysqli_prepare($link, $query); // Usando $link para a conexão
+        mysqli_stmt_bind_param($stmt, "s", $emailUsuario);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if (mysqli_num_rows($result) > 0) {
+            $user = mysqli_fetch_assoc($result);
+            // Verifique se o campo 'foto' contém um valor válido
+            if (!empty($user['foto'])) {
+                $fotoPerfil = str_replace('../', '', $user['foto']); // Remove "../" do início do caminho
+            }
+        }
+
+        mysqli_stmt_close($stmt);
+    }
 
     ?>
     <!DOCTYPE html>
@@ -36,9 +56,6 @@ function renderHeader($currentPage = '') {
                 <!-- Itens do menu -->
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link <?= $currentPage === 'index' ? 'active' : '' ?>" href="index.php">Início</a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link <?= $currentPage === 'produtos' ? 'active' : '' ?>" href="home_Page.php">Produtos</a>
                         </li>
@@ -71,9 +88,13 @@ function renderHeader($currentPage = '') {
                     <!-- Botões à direita -->
                     <ul class="navbar-nav">
                         <?php if ($emailUsuario): ?>
-                            <!-- Se o usuário estiver logado, mostra o botão de logout -->
+                            <!-- Exibe o nome do usuário e a foto do perfil -->
                             <li class="nav-item">
-                                <span class="navbar-text me-3 text-white">Bem-vindo, <?= htmlspecialchars($emailUsuario) ?></span>
+                                <span class="navbar-text me-3 text-white d-flex align-items-center">
+                                    <!-- Exibe a foto do usuário, com tamanho ajustado -->
+                                    <img src="<?= htmlspecialchars($fotoPerfil) ?>" alt="Foto de Perfil" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover; margin-right: 8px;">
+                                    Bem-vindo, <?= htmlspecialchars($emailUsuario) ?>
+                                </span>
                             </li>
                             <li class="nav-item">
                                 <a class="btn btn-danger" href="php/logout.php">Logout</a>
