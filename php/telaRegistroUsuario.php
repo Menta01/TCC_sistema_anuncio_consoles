@@ -5,7 +5,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Dados do formulário
     $nome = $_POST['nome'];
     $email = $_POST['email'];
-    $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
+    $senha = $_POST['senha']; // Sem hash
     $telefone = $_POST['phone'];
     $estado = $_POST['estado'];
     $cidade = $_POST['cidade'];
@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $caminhoCompleto = $diretorioUploads . $nomeArquivo;
 
             if (move_uploaded_file($foto['tmp_name'], $caminhoCompleto)) {
-                // Corrigido: Usar $link em vez de $conn
                 $sql = "INSERT INTO usuariosbd (nome, email, senha, Telefone, Estado, Cidade, foto) 
                         VALUES (?, ?, ?, ?, ?, ?, ?)";
 
@@ -37,8 +36,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->bind_param('sssssss', $nome, $email, $senha, $telefone, $estado, $cidade, $caminhoCompleto);
 
                     if ($stmt->execute()) {
-                        // Redireciona para a página home_Page.php
-                        header("Location: ../home_Page.php");
+                        // Obter o ID do usuário inserido
+                        $id_usuario = $stmt->insert_id;
+
+                        // Iniciar a sessão
+                        session_start();
+
+                        // Definir as variáveis de sessão com as informações do usuário recém-registrado
+                        $_SESSION['usuario_id'] = $id_usuario;
+                        $_SESSION['usuario_nome'] = $nome;
+                        $_SESSION['usuario_email'] = $email;
+
+                        // Redireciona para a página de login
+                        header("Location: ../tela_Login.php");
                         exit;
                     } else {
                         echo "Erro ao salvar no banco de dados: " . $stmt->error;
