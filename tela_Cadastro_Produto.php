@@ -1,12 +1,10 @@
 <?php
-// Inclui o arquivo de validação de sessão
-include 'php/valida_sessao.php'; // Este arquivo já valida a sessão e inicia o `session_start`
 
-// Inclui o cabeçalho, passando a página atual
-require 'visual/header.php';
-renderHeader('postar_anuncio'); // Passa 'postar_anuncio' como parâmetro para marcar a página ativa
+include 'php/valida_sessao.php'; 
 
-// Conexão com o banco de dados
+
+include 'visual/header.php';
+renderHeader('postar_anuncio'); 
 require 'php/conexaoBD.php';
 
 // Caminho do diretório para armazenar as imagens (diretório absoluto)
@@ -14,7 +12,7 @@ $diretorio_destino = 'C:/xampp/htdocs/ProjetoTCC/uploads/imagens_produtos/';
 
 // Verifica se o diretório existe, caso contrário, cria-o
 if (!is_dir($diretorio_destino)) {
-    mkdir($diretorio_destino, 0777, true); // Cria o diretório com permissões adequadas
+    mkdir($diretorio_destino, 0777, true); 
 }
 
 $produto_cadastrado = false;
@@ -48,14 +46,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($_FILES['imagens']['name'] as $index => $nome_imagem) {
                 // Caminho para armazenar a imagem no diretório absoluto
                 $imagem_nome = uniqid('img_') . '.' . pathinfo($nome_imagem, PATHINFO_EXTENSION);
-                $caminho_destino = $diretorio_destino . $imagem_nome; // Caminho correto para armazenar
+                $caminho_destino = $diretorio_destino . $imagem_nome; 
 
                 // Verifica se o arquivo foi enviado sem erro
                 if ($_FILES['imagens']['error'][$index] === UPLOAD_ERR_OK) {
                     // Move o arquivo para o diretório de uploads
                     if (move_uploaded_file($_FILES['imagens']['tmp_name'][$index], $caminho_destino)) {
-                        // Salva o caminho relativo da imagem no banco de dados
-                        $caminho_relativo = 'uploads/imagens_produtos/' . $imagem_nome; // Caminho relativo para o banco de dados
+                       
+                        $caminho_relativo = 'uploads/imagens_produtos/' . $imagem_nome;
                         $sql_imagem = "INSERT INTO imagens_produto (id_produto, url_imagem) 
                                        VALUES ('$id_produto', '$caminho_relativo')";
 

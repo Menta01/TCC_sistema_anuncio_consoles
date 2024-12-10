@@ -3,16 +3,22 @@ include('php/valida_Sessao.php');
 include('php/conexaoBD.php');
 include('visual/header.php'); // Incluindo o arquivo de cabeçalho
 
-// Função para excluir usuário
-if (isset($_GET['excluir_usuario'])) {
-    $id_usuario = $_GET['excluir_usuario'];
-    $delete_sql = "DELETE FROM usuariosbd WHERE ID = $id_usuario";
-    if (mysqli_query($link, $delete_sql)) {
-        echo "Usuário excluído com sucesso!";
-        header("Location: gestao_usuarios_anuncios.php");
+// Função para desativar ou ativar usuário
+if (isset($_GET['alterar_status'])) {
+    $id_usuario = $_GET['alterar_status'];
+    $current_status_query = "SELECT status FROM usuariosbd WHERE ID = $id_usuario";
+    $current_status_result = mysqli_query($link, $current_status_query);
+    $current_status = mysqli_fetch_assoc($current_status_result)['status'];
+
+    $new_status = ($current_status === 'ativo') ? 'inativo' : 'ativo';
+
+    $update_status_sql = "UPDATE usuariosbd SET status = '$new_status' WHERE ID = $id_usuario";
+    if (mysqli_query($link, $update_status_sql)) {
+        echo "Status do usuário atualizado com sucesso!";
+        header("Location: tela_Gestão_Usuarios.php");
         exit();
     } else {
-        echo "Erro ao excluir usuário: " . mysqli_error($link);
+        echo "Erro ao atualizar status do usuário: " . mysqli_error($link);
     }
 }
 
@@ -52,6 +58,7 @@ if (isset($_POST['editar_usuario'])) {
                 <th>Tipo de Usuário</th>
                 <th>Estado</th>
                 <th>Cidade</th>
+                <th>Status</th>
                 <th>Ações</th>
             </tr>
         </thead>
@@ -68,9 +75,11 @@ if (isset($_POST['editar_usuario'])) {
                 echo "<td>" . $usuario['TipoUsuario'] . "</td>";
                 echo "<td>" . $usuario['Estado'] . "</td>";
                 echo "<td>" . $usuario['Cidade'] . "</td>";
+                echo "<td>" . ucfirst($usuario['status']) . "</td>";
                 echo "<td>
                         <a href='#' data-bs-toggle='modal' data-bs-target='#editarUsuarioModal" . $usuario['ID'] . "' class='btn btn-warning btn-sm'>Editar</a>
-                        <a href='?excluir_usuario=" . $usuario['ID'] . "' class='btn btn-danger btn-sm'>Excluir</a>
+                        <a href='?alterar_status=" . $usuario['ID'] . "' class='btn " . ($usuario['status'] === 'ativo' ? 'btn-danger' : 'btn-success') . " btn-sm'>" . 
+                        ($usuario['status'] === 'ativo' ? 'Desativar' : 'Ativar') . "</a>
                       </td>";
                 echo "</tr>";
             }

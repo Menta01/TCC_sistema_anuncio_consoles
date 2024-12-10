@@ -21,18 +21,18 @@ if ($stmt) {
     // Vincula o email ao parâmetro da consulta
     mysqli_stmt_bind_param($stmt, 's', $emailUsuario);
     mysqli_stmt_execute($stmt); // Executa a consulta
-    $result = mysqli_stmt_get_result($stmt); // Obtém o resultado da consulta
+    $result = mysqli_stmt_get_result($stmt);
 
     // Verifica se o ID foi encontrado
     if ($row = mysqli_fetch_assoc($result)) {
-        $_SESSION['id_usuario'] = $row['id']; // Armazena o ID do usuário na sessão
+        $_SESSION['id_usuario'] = $row['id']; 
     } else {
         // Caso o usuário não seja encontrado no banco, redireciona para login
         header('location:loginUser.php?pagina=formLogin&erroLogin=naoLogado');
         exit();
     }
 
-    mysqli_stmt_close($stmt); // Fecha o statement
+    mysqli_stmt_close($stmt); 
 } else {
     // Erro ao preparar a consulta
     echo "Erro ao preparar a consulta SQL: " . mysqli_error($link);
